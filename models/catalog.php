@@ -27,18 +27,18 @@ function getCatalog($limit = null, $page = null, $sort = null, $filters = [])
 
     $query_arr = [];
     foreach ($filters as $filter) {
-        if (!$filter['type']) {
-            $result = getOneResult('SELECT categories.type FROM categories WHERE categories.code="' . $filter['code'] . '"');
+        if (!$filter->type) {
+            $result = getOneResult('SELECT categories.type FROM categories WHERE categories.code="' . $filter->code . '"');
             if (!$result) {
                 break;
             }
 
-            $filter['type'] = $result['type'];
+            $filter->type = $result['type'];
         }
 
-        if ($filter['type'] == 'checkbox') {
-            $categoryItems = '"' . implode('", "', $filter['items']) . '"';
-            $categoryCode = '"' . $filter['code'] . '"';
+        if ($filter->type == 'checkbox') {
+            $categoryItems = '"' . implode('", "', $filter->items) . '"';
+            $categoryCode = '"' . $filter->code . '"';
 
             $query_arr[] = '
                 `catalog`.`id` IN (
@@ -50,8 +50,8 @@ function getCatalog($limit = null, $page = null, $sort = null, $filters = [])
 			    WHERE (category_items.code IN (' . $categoryItems . ') AND categories.code = ' . $categoryCode . ')
 			    )
             ';
-        } elseif ($filter['type'] == 'range') {
-            $query_arr[] = '(catalog.price > ' . $filter['items'][0] . ' AND catalog.price < ' . $filter['items'][1] . ')';
+        } elseif ($filter->type == 'range') {
+            $query_arr[] = '(catalog.price > ' . $filter->items[0] . ' AND catalog.price < ' . $filter->items[1] . ')';
         }
     }
 
@@ -150,4 +150,8 @@ function getFiltersFromArray ($array) {
     }
     
     return $filters;
+}
+
+function getPageCount($items_len, $limit) {
+    return ceil($items_len/$limit);
 }

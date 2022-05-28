@@ -231,3 +231,5 @@
         </div>
     </div>
 </section>
+
+<script type="module" src="/js/index.js"></script>

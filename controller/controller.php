@@ -7,12 +7,19 @@ function prepareVariables($page) {
 		case 'catalog':
 			$params['$title'] = 'Каталог';
             $filters = getFiltersFromArray($_GET);
+            foreach ($filters as &$filter) {
+                $filter = (object) $filter;
+            }
 			$params['catalog'] = getCatalog($_GET['limit'], $_GET['page'], $_GET['sort'], $filters);
             $params['filters'] = getFilters();
 			break;
 		case 'api-catalog':
-            $filters = getFiltersFromArray($_GET);
-			echo json_encode(getCatalog($_GET['limit'], $_GET['page'], $_GET['sort'], $filters), JSON_UNESCAPED_UNICODE);
+            $body = (array) json_decode(file_get_contents('php://input'));
+            $items = getCatalog($body['limit'], $body['page'], $body['sort'], $body['filters']);
+			echo json_encode([
+                'items' => $items,
+                'pageCount' => getPageCount(count($items), $body['limit'])
+            ], JSON_UNESCAPED_UNICODE);
 			die();
 		case 'cart':
 			$params['$title'] = 'Корзина';
