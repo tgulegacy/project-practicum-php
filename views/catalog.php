@@ -43,8 +43,9 @@
                                     <label class="checkbox">
                                         <input class="checkbox__native"
                                                type="checkbox" name="<?=$checkbox['code']?>"
-                                               data-filter-item>
-                                        <!--                                           ${options.isPicked ? 'checked' : ''}>-->
+                                               data-filter-item
+                                               <?=$checkbox['is_active'] ? 'checked' : ''?>
+                                        >
 
                                         <span class="checkbox__box"></span>
 
@@ -52,17 +53,17 @@
                                     </label>
                                 <?php endforeach;?>
                             <?php else: ?>
-                                <div class="range-el" style='--left: <?=$filter['min']?>; --right: <?=$filter['max']?>; --min: <?=$filter['min']?>; --max: <?=$filter['max']?>' data-range>
+                                <div class="range-el" style='--left: <?=$filter['left']?>; --right: <?=$filter['right']?>; --min: <?=$filter['min']?>; --max: <?=$filter['max']?>' data-range>
                                     <div class="range-el__inputs" role='group' aria-labelledby='multi-lbl'>
-                                        <input type='range' min=<?=$filter['min']?> value=${left} max=<?=$filter['max']?> data-range-left data-filter-item>
+                                        <input type='range' min=<?=$filter['min']?> value=<?=$filter['left']?> max=<?=$filter['max']?> data-range-left data-filter-item>
 
-                                        <input type='range' min=<?=$filter['min']?> value=${right} max=<?=$filter['max']?> data-range-right>
+                                        <input type='range' min=<?=$filter['min']?> value=<?=$filter['right']?> max=<?=$filter['max']?> data-range-right>
 
                                         <div class="range-el__bg-line"></div>
                                     </div>
                                     <div class="range-el__outputs">
-                                        <output style='--c: <?=$filter['min']?>'></output>
-                                        <output style='--c: <?=$filter['max']?>'></output>
+                                        <output style='--c: var(--left)'></output>
+                                        <output style='--c: var(--right)'></output>
                                     </div>
                                 </div>
                             <?php endif; ?>

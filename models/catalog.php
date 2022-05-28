@@ -92,43 +92,64 @@ function getProductsCostLimits()
     return getAssocResult($query);
 }
 
-function getFilters(): array
+function getFilters($filters): array
 {
     $query = "SELECT categories.code, categories.title, categories.type, category_items.code as itemCode, category_items.title AS itemTitle FROM `categories` LEFT JOIN `category_items` ON categories.id = category_items.parent_id";
     $data = getAssocResult($query);
 
     $filtersObj = [];
     foreach ($data as $val) {
+        $filter_active = array_values(array_filter($filters, function ($filter) use ($val) {
+            if ($filter->type === 'checkbox') {
+                return $filter->code == $val['code'] && in_array($val['itemCode'], $filter->items);
+            } elseif ($filter->type === 'range') {
+                return $filter->code == $val['code'];
+            } else return [];
+        }));
+        
         if ($val['type'] == "checkbox") {
+            $item = [
+                "code" => $val['itemCode'],
+                "title" => $val['itemTitle']
+            ];
+
+            if ($filter_active) {
+                $item['is_active'] = true;
+            }
+            
             if (array_key_exists($val['code'], $filtersObj)) {
-                $filtersObj[$val['code']]['items'][] = [
-                    "code" => $val['itemCode'],
-                    "title" => $val['itemTitle']
-                ];
+                $filtersObj[$val['code']]['items'][] = $item;
             } else {
                 $filtersObj[$val['code']] = [
                     "code" => $val['code'],
                     "title" => $val['title'],
                     "type" => $val['type'],
                     "items" => [
-                        [
-                            "code" => $val['itemCode'],
-                            "title" => $val['itemTitle']
-                        ]
+                        $item
                     ]
                 ];
             }
         } elseif ($val['type'] == "range") {
             $data = getProductsCostLimits();
             [$min, $max] = array_values($data[0]);
-
-            $filtersObj[$val['code']] = [
+            
+            $item = [
                 "code" => $val['code'],
                 "title" => $val['title'],
                 "type" => $val['type'],
                 "min" => intval($min),
                 "max" => intval($max),
             ];
+            
+            if ($filter_active) {
+                $item['left'] = (int)$filter_active[0]->items[0];
+                $item['right'] = (int)$filter_active[0]->items[1];
+            } else {
+                $item['left'] = $item['min'];
+                $item['right'] = $item['max'];
+            }
+
+            $filtersObj[$val['code']] = $item;
         }
     }
 

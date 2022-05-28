@@ -11,7 +11,7 @@ function prepareVariables($page) {
                 $filter = (object) $filter;
             }
 			$params['catalog'] = getCatalog($_GET['limit'], $_GET['page'], $_GET['sort'], $filters);
-            $params['filters'] = getFilters();
+            $params['filters'] = getFilters($filters);
 			break;
 		case 'api-catalog':
             $body = (array) json_decode(file_get_contents('php://input'));
