@@ -6,10 +6,13 @@ function prepareVariables($page) {
 	switch ($page) {
 		case 'catalog':
 			$params['$title'] = 'Каталог';
-			$params['catalog'] = getCatalog();
+            $filters = getFiltersFromArray($_GET);
+			$params['catalog'] = getCatalog($_GET['limit'], $_GET['page'], $_GET['sort'], $filters);
+            $params['filters'] = getFilters();
 			break;
 		case 'api-catalog':
-			echo json_encode(getCatalog(), JSON_UNESCAPED_UNICODE);
+            $filters = getFiltersFromArray($_GET);
+			echo json_encode(getCatalog($_GET['limit'], $_GET['page'], $_GET['sort'], $filters), JSON_UNESCAPED_UNICODE);
 			die();
 		case 'cart':
 			$params['$title'] = 'Корзина';
